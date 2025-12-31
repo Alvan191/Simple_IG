@@ -27,6 +27,11 @@ func PostContent(ctx *fiber.Ctx) error {
 		})
 	}
 
+	//ambil user_id dari middleware
+	userID := ctx.Locals("user_id").(int)
+
+	postContent.UserID = uint(userID)
+
 	config.DB.Create(&postContent)
 
 	return ctx.JSON(postContent)

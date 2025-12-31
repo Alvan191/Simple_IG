@@ -10,6 +10,7 @@ import (
 func main() {
 	config.ConnectDB()
 	migration.MigrateUsersInsta()
+	migration.MigrateUserIDContent()
 
 	app := fiber.New()
 

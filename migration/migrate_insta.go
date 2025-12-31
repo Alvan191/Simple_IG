@@ -24,3 +24,11 @@ func MigrateUsersInsta() {
 		db.Migrator().AddColumn(&models.Users{}, "Password")
 	}
 }
+
+func MigrateUserIDContent() {
+	db := config.DB
+
+	if !db.Migrator().HasColumn(&models.Insta{}, "user_id") {
+		db.Migrator().AddColumn(&models.Insta{}, "user_id")
+	}
+}
