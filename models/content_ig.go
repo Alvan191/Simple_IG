@@ -7,6 +7,7 @@ type Insta struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	Content   string    `json:"content" validate:"required"`
 	UserID    uint      `json:"user_id"`
+	User      Users     `gorm:"foreignKey:UserID"`
 	CreatedAt time.Time `json:"created_at"`
 
 	Coments []Comments `gorm:"foreignKey:PostID"`

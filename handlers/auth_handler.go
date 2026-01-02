@@ -21,9 +21,11 @@ func Register(ctx *fiber.Ctx) error {
 	var exist models.Users
 	result := config.DB.Where("username = ? OR email = ?", input.Username, input.Email).First(&exist)
 	if result.Error == nil {
-		return ctx.Status(409).JSON(fiber.Map{
-			"error": "Username atau Email telah digunakan",
-		})
+		return ctx.Status(409).SendString("Username atau Email sudah digunakan")
+		//code untuk API
+		// JSON(fiber.Map{
+		// 	"error": "Username atau Email telah digunakan",
+		// })
 	}
 
 	user := models.Users{
@@ -34,10 +36,13 @@ func Register(ctx *fiber.Ctx) error {
 
 	config.DB.Create(&user)
 
-	return ctx.JSON(fiber.Map{
-		"success": true,
-		"message": "Registrasi Berhasil",
-	})
+	//Code Untuk API
+	// return ctx.JSON(fiber.Map{
+	// 	"success": true,
+	// 	"message": "Registrasi Berhasil",
+	// })
+
+	return ctx.Redirect("/login", fiber.StatusSeeOther) //code untuk redirect ke halaman .html lain
 }
 
 func Login(ctx *fiber.Ctx) error {
@@ -71,13 +76,22 @@ func Login(ctx *fiber.Ctx) error {
 		})
 	}
 
-	return ctx.JSON(fiber.Map{
-		"success": true,
-		"token":   token,
-		"user": models.UserResponse{
-			ID:       int(user.ID),
-			Username: user.Username,
-			Email:    user.Email,
-		},
+	// return ctx.JSON(fiber.Map{
+	// 	"success": true,
+	// 	"token":   token,
+	// 	"user": models.UserResponse{
+	// 		ID:       int(user.ID),
+	// 		Username: user.Username,
+	// 		Email:    user.Email,
+	// 	},
+	// })
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "jwt",
+		Value:    token,
+		HTTPOnly: true,
+		Secure:   false,
+		Path:     "/",
 	})
+
+	return ctx.Redirect("/home", fiber.StatusSeeOther)
 }

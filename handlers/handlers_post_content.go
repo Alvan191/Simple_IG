@@ -11,28 +11,36 @@ var validate = validator.New()
 
 func GetContent(ctx *fiber.Ctx) error {
 	var getContent []models.Insta
-	config.DB.Find(&getContent)
+	if err := config.DB.
+		Preload("Coments.User"). //agar komentar dan username muncul
+		Preload("User").         // agar username post muncul
+		Order("created_at DESC").
+		Find(&getContent).Error; err != nil {
+		return ctx.Status(500).SendString(err.Error())
+	}
 
-	return ctx.JSON(getContent)
+	return ctx.Render("home", fiber.Map{
+		"Posts": getContent,
+	})
 }
 
 func PostContent(ctx *fiber.Ctx) error {
 	var postContent models.Insta
-	ctx.BodyParser(&postContent)
-
-	err := validate.Struct(&postContent)
-	if err != nil {
-		return ctx.Status(400).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+	if err := ctx.BodyParser(&postContent); err != nil {
+		return ctx.Status(400).SendString("Isi postingan tidak valid")
 	}
+
+	// err := validate.Struct(&postContent)
+	// if err != nil {
+	// 	return ctx.Status(400).JSON(fiber.Map{
+	// 		"error": err.Error(),
+	// 	})
+	// }
 
 	//ambil user_id dari middleware
 	userID := ctx.Locals("user_id").(int)
-
 	postContent.UserID = uint(userID)
 
 	config.DB.Create(&postContent)
-
-	return ctx.JSON(postContent)
+	return ctx.Redirect("/")
 }

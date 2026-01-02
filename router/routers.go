@@ -8,7 +8,17 @@ import (
 
 func MapRoutes(app *fiber.App) {
 	// app.Static("/", "./views")
-	app.Get("/insta", handlers.GetContent)
+	app.Get("/login", func(ctx *fiber.Ctx) error {
+		return ctx.Render("login", nil)
+	})
+	app.Get("/register", func(ctx *fiber.Ctx) error {
+		return ctx.Render("register", nil)
+	})
+	app.Get("/home", middleware.AuthRequired, func(ctx *fiber.Ctx) error {
+		return ctx.Render("home", nil)
+	})
+
+	app.Get("/", middleware.AuthRequired, handlers.GetContent)
 	app.Post("/insta", middleware.AuthRequired, handlers.PostContent)
 
 	app.Post("/users/regist", handlers.Register)

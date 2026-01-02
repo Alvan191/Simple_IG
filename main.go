@@ -5,6 +5,7 @@ import (
 	"github.com/Alvan191/Simple_IG.git/migration"
 	"github.com/Alvan191/Simple_IG.git/router"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
 )
 
 func main() {
@@ -14,7 +15,11 @@ func main() {
 	// migration.MigrateCommentContentInsta()
 	migration.MigrateSimpleIG()
 
-	app := fiber.New()
+	engine := html.New("./views", ".html") // tambahan untuk kehubung ke html
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 
 	router.MapRoutes(app)
 
