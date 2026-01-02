@@ -8,9 +8,13 @@ import (
 
 func MapRoutes(app *fiber.App) {
 	// app.Static("/", "./views")
-	app.Get("/insta", middleware.AuthRequired, handlers.GetContent)
+	app.Get("/insta", handlers.GetContent)
 	app.Post("/insta", middleware.AuthRequired, handlers.PostContent)
 
 	app.Post("/users/regist", handlers.Register)
 	app.Post("/users/login", handlers.Login)
+
+	//route comment
+	app.Post("/posts/:post_id/comments", middleware.AuthRequired, handlers.CreateComment)
+	app.Get("/posts/:post_id/comments", handlers.GetCommentsByPost)
 }

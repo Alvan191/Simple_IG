@@ -9,8 +9,10 @@ import (
 
 func main() {
 	config.ConnectDB()
-	migration.MigrateUsersInsta()
-	migration.MigrateUserIDContent()
+	// migration.MigrateUsersInsta()
+	// migration.MigrateUserIDContent()
+	// migration.MigrateCommentContentInsta()
+	migration.MigrateSimpleIG()
 
 	app := fiber.New()
 
