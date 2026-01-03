@@ -34,17 +34,16 @@ func CreateComment(ctx *fiber.Ctx) error {
 
 	var post models.Insta
 	if err := config.DB.First(&post, postID).Error; err != nil {
-		return ctx.Status(404).JSON(fiber.Map{
-			"message": "postingan tidak ditemukan",
-		})
+		return ctx.Status(404).SendString("Postingan tidak ditemukan")
 	}
 
 	config.DB.Create(&comment).Preload("User").First(&comment, comment.ID)
 
-	return ctx.JSON(fiber.Map{
-		"success": true,
-		"data":    comment,
-	})
+	// return ctx.JSON(fiber.Map{
+	// 	"success": true,
+	// 	"data":    comment,
+	// })
+	return ctx.Redirect("/")
 }
 
 func GetCommentsByPost(ctx *fiber.Ctx) error {
@@ -63,5 +62,8 @@ func GetCommentsByPost(ctx *fiber.Ctx) error {
 		})
 	}
 
-	return ctx.JSON(comments)
+	// return ctx.JSON(comments)
+	return ctx.Render("home", fiber.Map{
+		"Coments": comments,
+	})
 }

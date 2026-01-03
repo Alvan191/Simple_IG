@@ -14,9 +14,9 @@ func MapRoutes(app *fiber.App) {
 	app.Get("/register", func(ctx *fiber.Ctx) error {
 		return ctx.Render("register", nil)
 	})
-	app.Get("/home", middleware.AuthRequired, func(ctx *fiber.Ctx) error {
-		return ctx.Render("home", nil)
-	})
+	// app.Get("/home", middleware.AuthRequired, func(ctx *fiber.Ctx) error {
+	// 	return ctx.Render("home", nil)
+	// })
 
 	app.Get("/", middleware.AuthRequired, handlers.GetContent)
 	app.Post("/insta", middleware.AuthRequired, handlers.PostContent)

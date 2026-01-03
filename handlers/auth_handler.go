@@ -93,5 +93,5 @@ func Login(ctx *fiber.Ctx) error {
 		Path:     "/",
 	})
 
-	return ctx.Redirect("/home", fiber.StatusSeeOther)
+	return ctx.Redirect("/", fiber.StatusSeeOther)
 }
