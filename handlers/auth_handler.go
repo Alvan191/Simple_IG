@@ -58,21 +58,21 @@ func Login(ctx *fiber.Ctx) error {
 	config.DB.Where("email = ?", input.Email).First(&user)
 
 	if user.ID == 0 {
-		return ctx.Status(401).JSON(fiber.Map{
-			"message": "Email tidak ditemukan",
+		return ctx.Render("login", fiber.Map{
+			"Error": "Email tidak ditemukan",
 		})
 	}
 
 	if !utils.CheckPassword(user.Password, input.Password) {
-		return ctx.Status(401).JSON(fiber.Map{
-			"message": "Password salah",
+		return ctx.Render("login", fiber.Map{
+			"Error": "Password salah",
 		})
 	}
 
 	token, err := utils.GenerateToken(int(user.ID))
 	if err != nil {
-		return ctx.Status(500).JSON(fiber.Map{
-			"error": "Gagal generate token",
+		return ctx.Render("login", fiber.Map{
+			"Error": "Gagal generate token",
 		})
 	}
 

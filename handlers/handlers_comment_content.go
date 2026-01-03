@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/Alvan191/Simple_IG.git/config"
 	"github.com/Alvan191/Simple_IG.git/models"
@@ -60,6 +61,11 @@ func GetCommentsByPost(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(fiber.Map{
 			"message": "Gagal mengambil komentar",
 		})
+	}
+
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+	for i := range comments {
+		comments[i].CreatedAt = comments[i].CreatedAt.In(loc)
 	}
 
 	// return ctx.JSON(comments)

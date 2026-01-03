@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"time"
+
 	"github.com/Alvan191/Simple_IG.git/config"
 	"github.com/Alvan191/Simple_IG.git/models"
 	"github.com/go-playground/validator/v10"
@@ -17,6 +19,11 @@ func GetContent(ctx *fiber.Ctx) error {
 		Order("created_at DESC").
 		Find(&getContent).Error; err != nil {
 		return ctx.Status(500).SendString(err.Error())
+	}
+
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+	for i := range getContent {
+		getContent[i].CreatedAt = getContent[i].CreatedAt.In(loc)
 	}
 
 	return ctx.Render("home", fiber.Map{

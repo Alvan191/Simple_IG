@@ -42,7 +42,7 @@
         {{ range .Coments }}
         <div class="mt-2 ps-3 border-start">
           <strong>{{ .User.Username }}</strong>: {{ .Content }}
-          <br><small class="tect-muted">{{ .CreatedAt.Format "02 Jan 2006 15:04" }}</small>
+          <br><small class="text-muted">{{ .CreatedAt.Format "02 Jan 2006 15:04" }}</small>
         </div>
         {{ end }}
 
