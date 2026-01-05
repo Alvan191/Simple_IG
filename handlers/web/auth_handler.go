@@ -11,9 +11,7 @@ func Register(ctx *fiber.Ctx) error {
 	var input models.RegisterInput
 
 	if err := ctx.BodyParser(&input); err != nil {
-		return ctx.Status(400).JSON(fiber.Map{
-			"message": "Input tidak valid",
-		})
+		return ctx.Status(400).SendString("Input tidak valid")
 	}
 
 	hash, _ := utils.HashPassword(input.Password)
@@ -22,10 +20,6 @@ func Register(ctx *fiber.Ctx) error {
 	result := config.DB.Where("username = ? OR email = ?", input.Username, input.Email).First(&exist)
 	if result.Error == nil {
 		return ctx.Status(409).SendString("Username atau Email sudah digunakan")
-		//code untuk API
-		// JSON(fiber.Map{
-		// 	"error": "Username atau Email telah digunakan",
-		// })
 	}
 
 	user := models.Users{
@@ -49,9 +43,7 @@ func Login(ctx *fiber.Ctx) error {
 	var input models.LoginInput
 
 	if err := ctx.BodyParser(&input); err != nil {
-		return ctx.Status(400).JSON(fiber.Map{
-			"message": "Input tidak valid",
-		})
+		return ctx.Status(400).SendString("Input tidak valid")
 	}
 
 	var user models.Users
