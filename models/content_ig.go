@@ -12,5 +12,5 @@ type Insta struct {
 	UpdatedAt *time.Time `json:"updated_at"`
 
 	User    Users      `gorm:"foreignKey:UserID"`
-	Coments []Comments `gorm:"foreignKey:PostID"`
+	Coments []Comments `gorm:"foreignKey:PostID; constraint:OnDelete:CASCADE"`
 }

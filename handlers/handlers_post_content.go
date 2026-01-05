@@ -5,11 +5,10 @@ import (
 
 	"github.com/Alvan191/Simple_IG.git/config"
 	"github.com/Alvan191/Simple_IG.git/models"
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
-var validate = validator.New()
+// var validate = validator.New()
 
 func PostContent(ctx *fiber.Ctx) error {
 	var postContent models.Insta
@@ -82,4 +81,19 @@ func EditContent(ctx *fiber.Ctx) error { // ini untuk memunculkan data lama keti
 	return ctx.Render("update", fiber.Map{
 		"Post": post,
 	})
+}
+
+func DeleteContent(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+
+	result := config.DB.Delete(&models.Insta{}, id)
+	if result.Error != nil {
+		return ctx.Status(500).SendString("Failed to delete content")
+	}
+
+	if result.RowsAffected == 0 {
+		return ctx.Status(404).SendString("content not found")
+	}
+
+	return ctx.Redirect("/")
 }
