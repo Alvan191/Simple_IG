@@ -19,7 +19,7 @@ type LoginInput struct { //req API
 }
 
 type UserResponse struct { //data tanpa pw
-	ID       int    `json:"id"`
+	ID       uint   `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 }

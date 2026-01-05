@@ -28,7 +28,12 @@
     {{ range .Posts }}
     <div class="card mb-3">
       <div class="card-body">
-        <h6>{{ if .User }}{{ .User.Username }}{{ else }}Unknown{{ end }}</h6>
+        <div class="d-flex align-items-center justify-content-between">
+          <h6 class="mb-0">{{ if .User }}{{ .User.Username }}{{ else }}Unknown{{ end }}</h6>
+          {{ if eq .UserID $.CurrentUserID }}
+          <a href="/insta/{{ .ID }}/edit" class="btn btn-sm btn-light">&#9999;</a>
+          {{ end }}
+        </div>
         <p>{{ .Content}}</p>
         <small class="text-muted">{{ .CreatedAt.Format "02 Jan 2006 15:04" }}</small>
 
