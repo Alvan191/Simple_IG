@@ -8,7 +8,15 @@
 </head>
 
 <body>
-
+  <nav class="navbar navbar-light bg-white border-bottom mb-4">
+    <div class="container d-flex justify-content-end">
+      <div class="d-flex align-items-center">
+        <span class="me-2 fw-semibold">{{ .CurrentUser }}</span>
+        <img src="https://ui-avatars.com/api/?name={{ .CurrentUser }}&background=0D6EFD&color=fff"
+          class="rounded-circle" width="40" height="40">
+      </div>
+    </div>
+  </nav>
   <div class="container mt-4">
 
     <h4>Buat Post</h4>
@@ -30,11 +38,11 @@
       <div class="card-body">
         <div class="d-flex align-items-center justify-content-between">
           <h6 class="mb-0">{{ if .User }}{{ .User.Username }}{{ else }}Unknown{{ end }}</h6>
-          {{ if eq .UserID $.CurrentUserID }}
           <div class="dropdown">
             <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown"
               aria-expanded="false">&#8942;</button>
             <ul class="dropdown-menu dropdown-menu-end">
+              {{ if eq .UserID $.CurrentUserID }}
               <li>
                 <a href="/insta/{{ .ID }}/edit" class="dropdown-item">&#9999; Edit</a>
               </li>
@@ -44,9 +52,17 @@
                   <button type="submit" class="dropdown-item text-danger">&#128465; Delete</button>
                 </form>
               </li>
+              {{ end }}
+              <li>
+                <form action="" method="" onsubmit="return confirm('Laporkan postingan ini?')">
+                  <button type="submit" class="dropdown-item text-warning">
+                    🚩 Report
+                  </button>
+                </form>
+              </li>
+
             </ul>
           </div>
-          {{ end }}
         </div>
         <p>{{ .Content}}</p>
         <small class="text-muted">{{ .CreatedAt.Format "02 Jan 2006 15:04" }}</small>

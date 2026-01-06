@@ -23,7 +23,7 @@ func MapRoutes(app *fiber.App) {
 	app.Post("/insta", middleware.AuthRequiredWeb, handlers.PostContent)
 	app.Get("/insta/:id/edit", middleware.AuthRequiredWeb, handlers.EditContent)
 	app.Post("/insta/:id/update", middleware.AuthRequiredWeb, handlers.UpdateContent)
-	app.Post("/insta/:id/delete", handlers.DeleteContent)
+	app.Post("/insta/:id/delete", middleware.AuthRequiredWeb, handlers.DeleteContent)
 
 	//ROUTER WEBSITE comment
 	app.Post("/posts/:post_id/comments", middleware.AuthRequiredWeb, handlers.CreateComment)

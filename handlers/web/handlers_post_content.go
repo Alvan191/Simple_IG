@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Alvan191/Simple_IG.git/config"
@@ -27,6 +29,8 @@ func PostContent(ctx *fiber.Ctx) error {
 func GetContent(ctx *fiber.Ctx) error {
 	var getContent []models.Insta
 	if err := config.DB.
+		Where("insta.deleted_at IS NULL").
+		Preload("Coments", "deleted_at IS NULL").
 		Preload("Coments.User"). //agar komentar dan username muncul
 		Preload("User").         // agar username post muncul
 		Order("created_at DESC").
@@ -41,9 +45,13 @@ func GetContent(ctx *fiber.Ctx) error {
 
 	userID := ctx.Locals("user_id").(int)
 
+	var user models.Users
+	config.DB.First(&user, userID)
+
 	return ctx.Render("home", fiber.Map{
 		"Posts":         getContent,
 		"CurrentUserID": uint(userID),
+		"CurrentUser":   user.Username,
 	})
 }
 
@@ -77,9 +85,18 @@ func EditContent(ctx *fiber.Ctx) error { // ini untuk memunculkan data lama keti
 }
 
 func DeleteContent(ctx *fiber.Ctx) error {
-	id := ctx.Params("id")
+	idParam := ctx.Params("id")
 
-	result := config.DB.Delete(&models.Insta{}, id)
+	postId, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		return ctx.Status(400).SendString("Invalid ID")
+	}
+
+	userID := ctx.Locals("user_id").(int)
+
+	result := config.DB.
+		Where("id = ? AND user_id = ?", postId, userID).
+		Delete(&models.Insta{})
 	if result.Error != nil {
 		return ctx.Status(500).SendString("Failed to delete content")
 	}
@@ -88,5 +105,6 @@ func DeleteContent(ctx *fiber.Ctx) error {
 		return ctx.Status(404).SendString("content not found")
 	}
 
+	fmt.Println("Rows affected:", result.RowsAffected)
 	return ctx.Redirect("/")
 }
