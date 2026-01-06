@@ -29,18 +29,24 @@ func PostContent(ctx *fiber.Ctx) error {
 func GetContent(ctx *fiber.Ctx) error {
 	var getContent []models.Insta
 	if err := config.DB.
-		Where("insta.deleted_at IS NULL").
 		Preload("Coments", "deleted_at IS NULL").
-		Preload("Coments.User"). //agar komentar dan username muncul
-		Preload("User").         // agar username post muncul
-		Order("created_at DESC").
+		Preload("Coments.User").  //mengambil user pemilik komentar
+		Preload("User").          //mengambil user pemilik post
+		Order("created_at DESC"). //mengurutkan post berdasarkan waktu dibuat dari terbaru ke terlama
 		Find(&getContent).Error; err != nil {
 		return ctx.Status(500).SendString(err.Error())
 	}
 
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	for i := range getContent {
+		// post time
 		getContent[i].CreatedAt = getContent[i].CreatedAt.In(loc)
+
+		// comment time
+		for j := range getContent[i].Coments {
+			getContent[i].Coments[j].CreatedAt =
+				getContent[i].Coments[j].CreatedAt.In(loc)
+		}
 	}
 
 	userID := ctx.Locals("user_id").(int)
@@ -63,21 +69,35 @@ func UpdateContent(ctx *fiber.Ctx) error {
 		return ctx.Status(400).SendString("Bad request")
 	}
 
-	updates := map[string]interface{}{
-		"content":    updateContent.Content,
-		"updated_at": &now,
-	}
-	config.DB.Model(&models.Insta{}).Where("id = ?", id).Updates(updates)
+	userID := ctx.Locals("user_id").(int)
 
-	config.DB.First(&updateContent, id)
+	result := config.DB.
+		Model(&models.Insta{}).
+		Where("id = ? AND user_id = ?", id, userID).
+		Updates(map[string]interface{}{
+			"content":    updateContent.Content,
+			"updated_at": now,
+		})
+
+	if result.RowsAffected == 0 {
+		return ctx.Status(403).SendString("Tidak punya izin mengedit postingan ini")
+	}
+
 	return ctx.Redirect("/")
 }
 
 func EditContent(ctx *fiber.Ctx) error { // ini untuk memunculkan data lama ketika klik edit
 	id := ctx.Params("id")
+	userID := ctx.Locals("user_id").(int)
 
 	var post models.Insta
-	config.DB.First(&post, id)
+	result := config.DB.
+		Where("id = ? AND user_id = ?", id, userID).
+		First(&post)
+
+	if result.RowsAffected == 0 {
+		return ctx.Status(403).SendString("Tidak punya izin mengedit postingan ini")
+	}
 
 	return ctx.Render("update", fiber.Map{
 		"Post": post,
@@ -102,7 +122,7 @@ func DeleteContent(ctx *fiber.Ctx) error {
 	}
 
 	if result.RowsAffected == 0 {
-		return ctx.Status(404).SendString("content not found")
+		return ctx.Status(403).SendString("Tidak punya izin menghapus postingan ini")
 	}
 
 	fmt.Println("Rows affected:", result.RowsAffected)
