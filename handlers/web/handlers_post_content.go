@@ -16,13 +16,6 @@ func PostContent(ctx *fiber.Ctx) error {
 		return ctx.Status(400).SendString("Isi postingan tidak valid")
 	}
 
-	// err := validate.Struct(&postContent)
-	// if err != nil {
-	// 	return ctx.Status(400).JSON(fiber.Map{
-	// 		"error": err.Error(),
-	// 	})
-	// }
-
 	//ambil user_id dari middleware
 	userID := ctx.Locals("user_id").(int)
 	postContent.UserID = uint(userID)

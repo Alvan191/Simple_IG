@@ -13,18 +13,14 @@ func CreateComment(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("user_id").(int) // mengmbil user dari jwt
 	postID, err := strconv.Atoi(ctx.Params("post_id"))
 	if err != nil {
-		return ctx.Status(400).JSON(fiber.Map{
-			"message": "Post ID tidak valid",
-		})
+		return ctx.Status(400).SendString("Post ID tidak valid")
 	}
 
 	var input struct {
 		Content string `json:"content"`
 	}
 	if err := ctx.BodyParser(&input); err != nil || input.Content == "" {
-		return ctx.Status(400).JSON(fiber.Map{
-			"message": "Content wajib di isi",
-		})
+		return ctx.Status(400).SendString("Content wajib di isi")
 	}
 
 	comment := models.Comments{
@@ -40,10 +36,6 @@ func CreateComment(ctx *fiber.Ctx) error {
 
 	config.DB.Create(&comment).Preload("User").First(&comment, comment.ID)
 
-	// return ctx.JSON(fiber.Map{
-	// 	"success": true,
-	// 	"data":    comment,
-	// })
 	return ctx.Redirect("/")
 }
 
@@ -68,7 +60,6 @@ func GetCommentsByPost(ctx *fiber.Ctx) error {
 		comments[i].CreatedAt = comments[i].CreatedAt.In(loc)
 	}
 
-	// return ctx.JSON(comments)
 	return ctx.Render("home", fiber.Map{
 		"Coments": comments,
 	})

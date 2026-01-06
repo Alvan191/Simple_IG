@@ -2,20 +2,13 @@ package middleware
 
 import (
 	"os"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 )
 
-func AuthRequired(ctx *fiber.Ctx) error {
-	//untuk REST API, misal pada postman
-	// authHeader := ctx.Get("Authorization")
-	// if authHeader == "" {
-	// 	return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-	// 		"message": "token tidak ditemukan",
-	// 	})
-	// }
-	// tokenStr := strings.Replace(authHeader, "Bearer ", "", 1)
+func AuthRequiredWeb(ctx *fiber.Ctx) error {
 	tokenStr := ctx.Cookies("jwt")
 	if tokenStr == "" {
 		return ctx.Redirect("/login")
@@ -30,20 +23,35 @@ func AuthRequired(ctx *fiber.Ctx) error {
 	})
 	if err != nil || !token.Valid {
 		return ctx.Redirect("/login")
-		// return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-		// 	"message": "Token tidak valid",
-		// })
+	}
+	userID := int(claims["user_id"].(float64))
+
+	ctx.Locals("user_id", userID)
+
+	return ctx.Next()
+}
+
+func AuthRequiredAPI(ctx *fiber.Ctx) error {
+	authHeader := ctx.Get("Authorization")
+	if authHeader == "" {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "token tidak ditemukan",
+		})
 	}
 
-	//ambil claims
-	// claims, ok := token.Claims.(jwt.MapClaims)
-	// if !ok {
-	// 	return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-	// 		"message": "Token tidak valid",
-	// 	})
-	// }
+	tokenStr := strings.Replace(authHeader, "Bearer ", "", 1)
 
-	//ambil user_id dari claims
+	claims := jwt.MapClaims{}
+
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRETKEY")), nil
+	})
+	if err != nil || !token.Valid {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "token tidak valid",
+		})
+	}
+
 	userID := int(claims["user_id"].(float64))
 
 	ctx.Locals("user_id", userID)

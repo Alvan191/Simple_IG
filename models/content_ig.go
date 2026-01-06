@@ -9,8 +9,18 @@ type Insta struct {
 
 	Content   string     `json:"content" validate:"required"`
 	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt *time.Time `json:"updated_at"`
+	UpdatedAt *time.Time `gorm:"<-:update" json:"updated_at"`
 
 	User    Users      `gorm:"foreignKey:UserID"`
 	Coments []Comments `gorm:"foreignKey:PostID; constraint:OnDelete:CASCADE"`
+}
+
+type InstaResponse struct {
+	ID        uint       `json:"id"`
+	UserID    uint       `json:"user_id"`
+	Content   string     `json:"content"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt *time.Time `json:"update_at"`
+
+	CommentCount int64
 }

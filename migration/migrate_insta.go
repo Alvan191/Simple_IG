@@ -55,4 +55,8 @@ func MigrateSimpleIG() {
 		&models.Insta{},
 		&models.Comments{},
 	)
+	// config.DB.Migrator().DropTable(
+	// 	&models.Comments{},
+	// 	&models.Insta{},
+	// )
 }
