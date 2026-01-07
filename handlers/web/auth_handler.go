@@ -30,12 +30,6 @@ func Register(ctx *fiber.Ctx) error {
 
 	config.DB.Create(&user)
 
-	//Code Untuk API
-	// return ctx.JSON(fiber.Map{
-	// 	"success": true,
-	// 	"message": "Registrasi Berhasil",
-	// })
-
 	return ctx.Redirect("/login", fiber.StatusSeeOther) //code untuk redirect ke halaman .html lain
 }
 
@@ -68,15 +62,6 @@ func Login(ctx *fiber.Ctx) error {
 		})
 	}
 
-	// return ctx.JSON(fiber.Map{
-	// 	"success": true,
-	// 	"token":   token,
-	// 	"user": models.UserResponse{
-	// 		ID:       int(user.ID),
-	// 		Username: user.Username,
-	// 		Email:    user.Email,
-	// 	},
-	// })
 	ctx.Cookie(&fiber.Cookie{
 		Name:     "jwt",
 		Value:    token,

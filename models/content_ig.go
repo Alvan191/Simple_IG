@@ -21,11 +21,12 @@ type Insta struct {
 }
 
 type InstaResponse struct {
-	ID        uint       `json:"id"`
-	UserID    uint       `json:"user_id"`
-	Content   string     `json:"content"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt *time.Time `json:"update_at"`
+	ID        uint           `json:"id"`
+	UserID    uint           `json:"user_id"`
+	Content   string         `json:"content"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt *time.Time     `json:"update_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 
 	CommentCount int64
 }
